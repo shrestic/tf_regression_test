@@ -21,4 +21,4 @@ tensorflow
 tftest
 vertexai
 google-cloud-dlp
-pyyaml==5.3.1
+pyyaml

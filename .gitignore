@@ -50,3 +50,4 @@ crash.log
 !tfvars/*.tfvars
 
 credentials.json
+.venv
