@@ -1,0 +1,13 @@
+---
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  repositories:
+    - repository: linter
+      name: v2-pl-linter
+      type: git
+      ref: refs/heads/main
+
+extends:
+  template: build.yml@linter

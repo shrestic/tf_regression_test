@@ -1,0 +1,52 @@
+---
+trigger:
+  - main
+
+resources:
+  repositories:
+    - repository: sa-activate-repo
+      type: git
+      name: MCCP-Data Science/v2-ado-sa-activate
+      ref: refs/tags/0.0.1
+    - repository: sa-deactivate-repo
+      type: git
+      name: MCCP-Data Science/v2-ado-sa-deactivate
+      ref: refs/tags/0.0.0
+    - repository: alm-repo
+      type: git
+      name: MCCP-Data Science/v2-ado-repo-tag
+      ref: refs/tags/0.0.0
+    - repository: sc-build-repo
+      type: git
+      name: MCCP-Data Science/v2-ado-sc-build
+      ref: refs/tags/0.0.0
+
+variables:
+  - group: MCC_AIF_GCP_PROD
+
+extends:
+  template: prod-template.yml@sc-build-repo
+  parameters:
+    tarballFilename: "mcc-aif-2-0-environment-mig-cluster-deploy.tar.gz"
+    preProcessingStepList:
+      - bash: |
+          echo "******************************************"
+          echo "All available GCP environment variables:"
+
+          for var in $(env | grep GCP_ | cut -d= -f1); do
+            echo "$var=${!var}"
+          done
+
+          echo "******************************************"
+          echo "Replacing environment variables in locals.tf"
+          echo "******************************************"
+          sed -i -r "s/HOSTPROJECTID/${HOSTPROJECTID}/g" locals.tf
+          sed -i -r "s/ENV_VALUE/${ENV_VALUE}/g" locals.tf
+          cat locals.tf
+          echo "******************************************"
+
+        displayName: Replace the variables in locals.tf
+        workingDirectory: $(Pipeline.Workspace)/$(Build.Repository.Name)
+        env:
+          HOSTPROJECTID: $(GCP_VERTEX_AI_WORKBENCH_HOST_PROJECT_ID)
+          ENV_VALUE: $(GCP_ENV_VALUE)
